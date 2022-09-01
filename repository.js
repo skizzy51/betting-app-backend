@@ -41,10 +41,22 @@ async function getUserById (id) {
     }
 }
 
-async function updateUserCash (id, amount) {
+async function deposit (id, amount) {
     try {
         const user = await User.findById(id)
         const newCash = user.cash + amount
+
+        const updateUser = await User.updateOne({ _id : id }, { cash : newCash })
+        return updateUser.modifiedCount
+    } catch (error) {
+        throw error
+    }
+}
+
+async function debit (id, amount) {
+    try {
+        const user = await User.findById(id)
+        const newCash = user.cash - amount
 
         const updateUser = await User.updateOne({ _id : id }, { cash : newCash })
         return updateUser.modifiedCount
@@ -58,5 +70,6 @@ module.exports = {
     loginUser,
     deleteUser,
     getUserById,
-    updateUserCash
+    deposit,
+    debit
 }

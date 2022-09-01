@@ -3,7 +3,8 @@ const {
     loginUser,
     deleteUser,
     getUserById,
-    updateUserCash,
+    deposit,
+    debit
 } = require('./repository')
 
 const HTTPStatus = require("http-status");
@@ -79,13 +80,26 @@ async function DeleteUser (req, res, next) {
     }
 }
 
-async function UpdateUserCash (req, res, next) {
+async function Deposit (req, res, next) {
     try {
         const user = req.user
         const { amount } = req.body
-        const userUpdate = await updateUserCash(user._id, amount)
+        const userUpdate = await deposit(user._id, amount)
         userUpdate > 0
-        ? Success(res, 'Cash successfully updated')
+        ? Success(res, 'Cash successfully deposited')
+        : Failure(res, HTTPStatus.NOT_MODIFIED,)
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function Debit (req, res, next) {
+    try {
+        const user = req.user
+        const { amount } = req.body
+        const userUpdate = await debit(user._id, amount)
+        userUpdate > 0
+        ? Success(res, 'Cash successfully debited')
         : Failure(res, HTTPStatus.NOT_MODIFIED,)
     } catch (error) {
         next(error)
@@ -97,5 +111,6 @@ module.exports = {
     LoginUser,
     GetUser,
     DeleteUser,
-    UpdateUserCash
+    Deposit,
+    Debit
 }

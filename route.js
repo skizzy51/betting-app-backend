@@ -5,7 +5,8 @@ const {
     LoginUser,
     GetUser,
     DeleteUser,
-    UpdateUserCash
+    Deposit,
+    Debit
 } = require('./controller')
 
 const VerifyToken = require('./verify-token')
@@ -14,6 +15,8 @@ router.route('/user').post(CreateUser).get(VerifyToken, GetUser).delete(VerifyTo
 
 router.route('/login').post(LoginUser)
 
-router.route('/updateCash').post(VerifyToken, UpdateUserCash)
+router.route('/deposit').post(VerifyToken, Deposit)
+
+router.route('/debit').post(VerifyToken, Debit)
 
 module.exports = router

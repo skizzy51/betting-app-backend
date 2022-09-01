@@ -44,7 +44,7 @@ async function getUserById (id) {
 async function deposit (id, amount) {
     try {
         const user = await User.findById(id)
-        const newCash = user.cash + amount
+        const newCash = Number(user.cash) + Number(amount)
 
         const updateUser = await User.updateOne({ _id : id }, { cash : newCash })
         return updateUser.modifiedCount
@@ -56,7 +56,7 @@ async function deposit (id, amount) {
 async function debit (id, amount) {
     try {
         const user = await User.findById(id)
-        const newCash = user.cash - amount
+        const newCash = Number(user.cash) - Number(amount)
 
         const updateUser = await User.updateOne({ _id : id }, { cash : newCash })
         return updateUser.modifiedCount

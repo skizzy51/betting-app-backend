@@ -43,8 +43,11 @@ async function getUserById (id) {
 
 async function updateUserCash (id, amount) {
     try {
-        const user = await User.updateOne({ _id : id }, { cash : amount })
-        return user.modifiedCount
+        const user = await User.findById(id)
+        const newCash = user.cash + amount
+
+        const updateUser = await User.updateOne({ _id : id }, { cash : newCash })
+        return updateUser.modifiedCount
     } catch (error) {
         throw error
     }

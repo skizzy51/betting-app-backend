@@ -36,6 +36,22 @@ async function CreateUser (req, res, next) {
     }
 }
 
+async function CreateUserNoExpire (req, res, next) {
+    try {
+        const { username, password } = req.body
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await createUser(username, hashedPassword)
+        if (!user) {
+            Failure(res, HTTPStatus.FAILED_DEPENDENCY, 'User not created')
+            return
+        }
+        const token = jwt.sign({ id : user._id }, process.env.CIPHER)
+        res.status(HTTPStatus.CREATED).json({ message : 'User Created and signed in', token : token })
+    } catch (error) {
+        next(error)
+    }
+}
+
 async function LoginUser (req, res, next) {
     try {
         const { username, password } = req.body
@@ -46,6 +62,26 @@ async function LoginUser (req, res, next) {
         }
         if (await bcrypt.compare(password, user.password)){
             const token = jwt.sign({ id : user._id }, process.env.CIPHER, { expiresIn : '1d' })
+            res.json({ message : 'logged in', token : token })
+        }else{
+            Failure(res, HTTPStatus.BAD_REQUEST, 'Invalid password')
+            return
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function LoginNoExpire (req, res, next) {
+    try {
+        const { username, password } = req.body
+        const user = await loginUser(username)
+        if (!user) {
+            Failure(res, HTTPStatus.BAD_REQUEST, 'Invalid username')
+            return
+        }
+        if (await bcrypt.compare(password, user.password)){
+            const token = jwt.sign({ id : user._id }, process.env.CIPHER)
             res.json({ message : 'logged in', token : token })
         }else{
             Failure(res, HTTPStatus.BAD_REQUEST, 'Invalid password')
@@ -108,7 +144,9 @@ async function Debit (req, res, next) {
 
 module.exports = {
     CreateUser,
+    CreateUserNoExpire,
     LoginUser,
+    LoginNoExpire,
     GetUser,
     DeleteUser,
     Deposit,

@@ -46,7 +46,7 @@ async function CreateUserNoExpire (req, res, next) {
             return
         }
         const token = jwt.sign({ id : user._id }, process.env.CIPHER)
-        res.status(HTTPStatus.CREATED).json({ message : 'User Created and signed in', token : token })
+        res.status(HTTPStatus.CREATED).json({ message : 'User Created and signed in', token : token, user : user })
     } catch (error) {
         next(error)
     }
@@ -82,7 +82,7 @@ async function LoginNoExpire (req, res, next) {
         }
         if (await bcrypt.compare(password, user.password)){
             const token = jwt.sign({ id : user._id }, process.env.CIPHER)
-            res.json({ message : 'logged in', token : token })
+            res.json({ message : 'logged in', token : token, user : user })
         }else{
             Failure(res, HTTPStatus.BAD_REQUEST, 'Invalid password')
             return

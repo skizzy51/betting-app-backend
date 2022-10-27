@@ -122,7 +122,7 @@ async function Deposit (req, res, next) {
         const { amount } = req.body
         const userUpdate = await deposit(user._id, amount)
         userUpdate > 0
-        ? Success(res, 'Cash successfully deposited')
+        ? Success(res, 'Cash successfully deposited', {amount : amount})
         : Failure(res, HTTPStatus.NOT_MODIFIED,)
     } catch (error) {
         next(error)
@@ -135,7 +135,7 @@ async function Debit (req, res, next) {
         const { amount } = req.body
         const userUpdate = await debit(user._id, amount)
         userUpdate > 0
-        ? Success(res, 'Cash successfully debited')
+        ? Success(res, 'Cash successfully debited', {amount : amount})
         : Failure(res, HTTPStatus.NOT_MODIFIED,)
     } catch (error) {
         next(error)
